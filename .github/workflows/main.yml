@@ -17,7 +17,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 3.1.1   # pick a stable version
+          terraform_version: 1.8.3   # pick a stable version
 
       - name: Terraform Init
         run: terraform init
