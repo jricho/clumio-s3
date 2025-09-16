@@ -1,10 +1,10 @@
 name: Terraform Clumio
 
 on:
-  workflow_dispatch:   # manual trigger
+  workflow_dispatch:
   push:
     branches:
-      - main           # or whichever branch should trigger
+      - main
 
 jobs:
   terraform:
@@ -12,11 +12,11 @@ jobs:
 
     steps:
       - name: Configure AWS Credentials
-          uses: aws-actions/configure-aws-credentials@v4
-          with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: us-east-2 # Or your desired region
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
       
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -24,7 +24,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.8.3   # pick a stable version
+          terraform_version: 1.8.3
 
       - name: Terraform Init
         run: terraform init
