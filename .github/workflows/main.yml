@@ -26,6 +26,8 @@ jobs:
         env:
           TF_VAR_clumio_api_token: ${{ secrets.CLUMIO_API_TOKEN }}
           TF_VAR_clumio_api_base_url: ${{ vars.CLUMIO_API_BASE_URL }}
+          TF_VAR_aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          TF_VAR_aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
