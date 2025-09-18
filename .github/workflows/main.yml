@@ -25,7 +25,10 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.8.3
-      
+        
+      - name: Terraform Init
+        run: terraform init
+
       # -----------------------------
       # Import Existing S3 Bucket
       # -----------------------------
@@ -33,10 +36,8 @@ jobs:
         continue-on-error: true
         run: |
           terraform import aws_s3_bucket.demo clumio-demo-bucket
-          
-      - name: Terraform Init
-        run: terraform init
 
+          
       - name: Terraform Plan
         env:
           TF_VAR_clumio_api_token: ${{ secrets.CLUMIO_API_TOKEN }}
