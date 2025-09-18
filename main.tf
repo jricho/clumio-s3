@@ -6,7 +6,13 @@ provider "aws" {
     }
   }
 }
-
+terraform {
+  backend "s3" {
+    bucket         = "jr-tfstate"
+    key            = "~/code/clumio-s3/terraform.tfstate"
+    region         = "us-east-2"  
+  }
+}
 terraform {
   required_providers {
     clumio = {
