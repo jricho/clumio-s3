@@ -1,88 +1,44 @@
-name: Terraform Apply with Scripted Imports
+name: Terraform Clumio
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-
-env:
-  AWS_REGION: us-east-2
-  BUCKET_NAME: clumio-demo-bucket
-  CLUMIO_API_TOKEN: ${{ secrets.CLUMIO_API_TOKEN }}
-  CLUMIO_API_BASE_URL: ${{ vars.CLUMIO_API_BASE_URL }}
-  CLUMIO_POLICY_NAME: S3 Gold
-  CLUMIO_POLICY_NAME: policy-S3-Backtrack
-  CLUMIO_PG_NAME: My Clumio Protection Group
-  CLUMIO_PG_NAME: My Clumio Backtrack Group
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+      
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.3
 
       - name: Terraform Init
         run: terraform init
 
-      # -----------------------------
-      # Scripted Import: S3 Bucket
-      # -----------------------------
-      - name: Scripted Import - S3 Bucket
-        shell: bash
-        run: |
-          if aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
-            echo "S3 bucket exists. Importing..."
-            terraform import aws_s3_bucket.example "$BUCKET_NAME"
-          else
-            echo "S3 bucket does not exist. Skipping import."
-          fi
-
-      # -----------------------------
-      # Scripted Import: Clumio Policy
-      # -----------------------------
-      - name: Scripted Import - Clumio Policy
-        shell: bash
-        run: |
-          POLICY_ID=$(curl -s -H "Authorization: Bearer $CLUMIO_API_TOKEN" "$CLUMIO_API_BASE_URL/v1/policies" \
-            | jq -r --arg NAME "$CLUMIO_POLICY_NAME" '.policies[] | select(.name==$NAME) | .id')
-          
-          if [ -n "$POLICY_ID" ]; then
-            echo "Clumio policy exists. Importing..."
-            terraform import clumio_policy.my_policy "$POLICY_ID"
-          else
-            echo "Clumio policy not found. Skipping import."
-          fi
-
-      # -----------------------------
-      # Scripted Import: Clumio Protection Group
-      # -----------------------------
-      - name: Scripted Import - Clumio Protection Group
-        shell: bash
-        run: |
-          PG_ID=$(curl -s -H "Authorization: Bearer $CLUMIO_API_TOKEN" "$CLUMIO_API_BASE_URL/v1/protection-groups" \
-            | jq -r --arg NAME "$CLUMIO_PG_NAME" '.[] | select(.name==$NAME) | .id')
-
-          if [ -n "$PG_ID" ]; then
-            echo "Protection group exists. Importing..."
-            terraform import clumio_protection_group.my_pg "$PG_ID"
-          else
-            echo "Protection group not found. Skipping import."
-          fi
-
-      # -----------------------------
-      # Terraform Plan
-      # -----------------------------
       - name: Terraform Plan
+        env:
+          TF_VAR_clumio_api_token: ${{ secrets.CLUMIO_API_TOKEN }}
+          TF_VAR_clumio_api_base_url: ${{ vars.CLUMIO_API_BASE_URL }}
+          TF_VAR_aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          TF_VAR_aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: terraform plan -out=tfplan
 
-      # -----------------------------
-      # Terraform Apply
-      # -----------------------------
       - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        env:
+          TF_VAR_clumio_api_token: ${{ secrets.CLUMIO_API_TOKEN }}
         run: terraform apply -auto-approve tfplan
-
