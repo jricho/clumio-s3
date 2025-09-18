@@ -52,6 +52,20 @@ jobs:
           TF_VAR_clumio_api_token: ${{ secrets.CLUMIO_API_TOKEN }}
         run: |
           terraform import clumio_policy.policy S3-Gold
+          terraform import clumio_policy.s3_backtrack policy-S3-Backtrack
+
+      # -----------------------------
+      # Import Clumio Protection Group
+      # -----------------------------
+      - name: Import Clumio Protection Group (if exists)
+        continue-on-error: true
+        env:
+          TF_VAR_clumio_api_base_url: ${{ vars.CLUMIO_API_BASE_URL }}
+          TF_VAR_clumio_api_token: ${{ secrets.CLUMIO_API_TOKEN }}
+        run: |
+          terraform import clumio_protection_group.protection_group My-Clumio-Protection-Group
+          terraform import clumio_protection_group.backtrack_group My-Clumio-Backtrack-Group
+
           
       - name: Terraform Plan
         env:
