@@ -25,7 +25,15 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.8.3
-
+      
+      # -----------------------------
+      # Import Existing S3 Bucket
+      # -----------------------------
+      - name: Import S3 Bucket (if exists)
+        continue-on-error: true
+        run: |
+          terraform import aws_s3_bucket.example clumio-demo-bucket
+          
       - name: Terraform Init
         run: terraform init
 
