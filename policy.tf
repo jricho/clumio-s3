@@ -1,6 +1,6 @@
 # Create a Clumio protection group that aggregates S3 buckets with the tag "clumio:example"
 resource "clumio_protection_group" "protection_group" {
-  name        = "My Clumio Protection Group"
+  name        = "My-Clumio-Protection-Group"
   bucket_rule = jsonencode({
     "aws_tag" = {
       "$eq" = {
@@ -15,7 +15,7 @@ resource "clumio_protection_group" "protection_group" {
 }
 # Create a Clumio protection group for Backtrack that aggregates S3 buckets with the tag "clumio:example"
 resource "clumio_protection_group" "backtrack_group" {
-  name        = "My Clumio Backtrack Group"
+  name        = "My-Clumio-Backtrack-Group"
   bucket_rule = jsonencode({
     "aws_tag" = {
       "$eq" = {
