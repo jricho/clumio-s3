@@ -42,6 +42,16 @@ jobs:
         run: |
           terraform import aws_s3_bucket.demo clumio-demo-bucket
 
+      # -----------------------------
+      # Import Clumio Policy
+      # -----------------------------
+      - name: Import Clumio Policy (if exists)
+        continue-on-error: true
+        env:
+          TF_VAR_clumio_api_base_url: ${{ vars.CLUMIO_API_BASE_URL }}
+          TF_VAR_clumio_api_token: ${{ secrets.CLUMIO_API_TOKEN }}
+        run: |
+          terraform import clumio_policy.policy S3 Gold
           
       - name: Terraform Plan
         env:
