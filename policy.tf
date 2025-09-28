@@ -39,7 +39,7 @@ resource "clumio_policy" "policy" {
     slas {
       retention_duration {
         unit  = "months"
-        value = 1
+        value = 2
       }
       rpo_frequency {
         unit  = "days"
