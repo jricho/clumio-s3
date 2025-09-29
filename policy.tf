@@ -31,7 +31,7 @@ resource "clumio_protection_group" "backtrack_group" {
   }
 }
 # Create a Clumio policy for protection groups with a 1-day RPO and 3-month retention
-source "clumio_policy" "policy" {
+resource "clumio_policy" "policy" {
   name = "S3-Gold"
   operations {
     action_setting = "immediate"
